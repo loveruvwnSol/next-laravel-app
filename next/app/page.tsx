@@ -1,7 +1,18 @@
-import Image from 'next/image'
-import styles from 'app/page.module.css'
+"use client";
+import { NextPage } from "next";
+import Image from "next/image";
+import styles from "./page.module.css";
+import useSWR from "swr";
+import axios from "@/libs/axios";
 
-export default function Home() {
+const Home: NextPage = () => {
+  const { data, error } = useSWR("/api/hello", () =>
+    axios.get("/api/hello").then((res: any) => res.data)
+  );
+
+  if (error) return <div>エラーが発生しました</div>;
+  if (!data) return <div>読み込み中</div>;
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -15,7 +26,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
+            By{" "}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -38,7 +49,7 @@ export default function Home() {
           priority
         />
       </div>
-
+      <p>{data}</p>
       <div className={styles.grid}>
         <a
           href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
@@ -91,5 +102,7 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
-}
+  );
+};
+
+export default Home;
